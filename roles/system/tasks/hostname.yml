@@ -1,0 +1,11 @@
+- name: Configure host name
+  hostname: 
+    name: "{{ hostname.short }}.{{ hostname.domain }}"
+
+- name: Update banners
+  template: 
+    src: "motd"
+    dest: "/etc/motd"
+    owner: root
+    group: root
+    mode: 0644

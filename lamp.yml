@@ -1,0 +1,4 @@
+- hosts: sandboxes
+  roles:
+    - common
+    - lamp

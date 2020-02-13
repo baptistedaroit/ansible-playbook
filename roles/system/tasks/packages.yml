@@ -1,0 +1,16 @@
+- name: Update all packages to latest version
+  yum:
+    name: '*'
+    state: latest 
+
+- name: Uninstall useless packages 
+  yum:
+    name: [ "smtp" , "sendmail" ]
+    state: absent
+
+- name: Install required packages 
+  yum:
+    name: "{{ packages }}"
+    state: latest 
+  vars: 
+    packages: "{{ rpms }}"

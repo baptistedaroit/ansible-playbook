@@ -1,0 +1,10 @@
+- name: Confgure log persistences
+  file: 
+    path: "/var/log/journal"
+    state: directory 
+    owner: root
+    group: systemd-journal
+    mode: 02755
+  notify: 
+    - create tmpfiles journald
+    - restart journald

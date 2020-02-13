@@ -1,0 +1,5 @@
+# Repositories
+- name: Configure EPEL Repository if needed
+  yum: 
+    name: epel-release
+    state: latest 

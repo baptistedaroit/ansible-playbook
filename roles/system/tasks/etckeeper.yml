@@ -1,0 +1,13 @@
+- name: Ensure system config is versionned
+  shell: "etckeeper init"
+  args: 
+    executable: /bin/bash
+    creates: /etc/.git
+    chdir: /etc
+
+- name: Ensure first commit is done 
+  shell: "etckeeper commit 'Initial Commit'"
+  args: 
+    executable: /bin/bash
+    creates: /etc/.git/refs/heads/master
+    chdir: /etc
