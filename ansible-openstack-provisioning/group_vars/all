@@ -1,0 +1,51 @@
+---
+# Variables here are applicables to all hosts groups
+ssh_key: ansible_key
+
+## Cloud configuration
+## Cloud to use to connect to OpenStack
+cloud: default
+
+## Image configuration
+## Default image is the cirros one
+image:
+  # Image name in Openstack
+  name: cirros # Image name in Openstack
+  # Image URL (ie where to downnload it if needed)
+  url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+  # Image location (ie where it is locally stored once downloaded)
+  location: /tmp/cirros-0.3.4-x86_64-disk.img
+#### End of image configuration ###
+
+
+## Network configuration
+## Default OpenStack network configuration
+network:
+  name: test-network
+  external: false
+subnet:
+  name: test-subnet
+  ip_version: 4
+  cidr: 192.168.0.0/24
+  gateway: 192.168.0.1
+  is_dhcp_enabled: yes
+  dns_server: 8.8.8.8
+router:
+  name: test-router
+  network: public
+### End of network configuration ###
+
+
+## Security configuration
+## OpenStack's network security configuration
+security_group:
+  name: test-security-group
+## End of security configuration ###
+
+
+## Server/Instance configuration
+## OpenStack instance configuration
+instance:
+  name: vm1-instance
+  flavor: m1.small
+## End of instance configuration ###

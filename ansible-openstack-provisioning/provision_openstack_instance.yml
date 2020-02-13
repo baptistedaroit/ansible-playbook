@@ -1,0 +1,39 @@
+---
+# This playbook deploys a simple OpenStack instance.
+
+- hosts: localhost
+  gather_facts: false
+
+  roles:
+    - openstack-provisioner
+
+  tasks:
+    - name: Add new OpenStack instance to sandbox group so it can be targeted by further step
+      add_host:
+        hostname: "{{ _openstack_instance.server.name }}"
+        groups: sandbox
+        ansible_host: "{{ _openstack_instance.server.public_v4 }}"
+        ansible_user: cirros
+      changed_when: false
+
+    - name: Display connection information
+      debug:
+        msg:
+          - "{{ _openstack_instance.server.name }} is ready."
+          - "ssh connection user is {{ ansible_user }}"
+          - "Host IP is {{ _openstack_instance.server.public_v4 }}"
+
+- hosts: sandbox
+  gather_facts: false
+
+  tasks:
+    - name: Waiting sandbox is ready for ansible
+      wait_for_connection:
+
+- hosts: sandbox
+  become: true
+  tasks:
+  - name: Update package
+    yum:
+      name: vim
+      state: latest

@@ -1,0 +1,110 @@
+---
+# Execute with "ansible-playbook ansible-openstack-blogpost.yml  -c local -vv"
+- name: Check if image is already downloaded
+  stat:
+    path: "{{ image.location }}"
+  register: img
+
+- name: Download cirros image
+  get_url:
+    url: "{{ image.url }}"
+    dest: "{{ image.location }}"
+  when: img.stat.exists == false
+
+- name: Upload cirros image to openstack
+  os_image:
+    name: "{{ image.name }}"
+    cloud: "{{ cloud }}"
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: "{{ image.location }}"
+
+- name: Create new keypair from current user's default SSH key
+  os_keypair:
+    cloud: "{{ cloud }}"
+    state: present
+    name: "{{ ssh_key }}"
+    public_key_file: "{{ '~' | expanduser }}/.ssh/id_rsa.pub"
+
+- name: Create the test network
+  os_network:
+    cloud: "{{ cloud }}"
+    state: present
+    name: "{{ network.name }}"
+    external: "{{ network.external }}" 
+    wait: yes
+  register: test_network
+
+- name: Create the test subnet
+  os_subnet:
+    cloud: "{{ cloud }}"
+    state: present
+    network_name: "{{ test_network.id }}"
+    name: "{{ subnet.name }}"
+    ip_version: "{{ subnet.ip_version }}"
+    cidr: "{{ subnet.cidr }}"
+    gateway_ip: "{{ subnet.gateway }}"
+    enable_dhcp: "{{ subnet.is_dhcp_enabled }}"
+    dns_nameservers:
+      - "{{ subnet.dns_server }}"
+    wait: yes
+  register: test_subnet
+
+- name: Create the test router
+  ignore_errors: yes #for some reasons, re-running this task gives errors
+  os_router:
+    cloud: "{{ cloud }}"
+    state: present
+    name: "{{ router.name }}"
+    network: "{{ router.network }}"
+    interfaces:
+      - test-subnet
+
+- name: Create a new security group
+  os_security_group:
+    cloud: "{{ cloud }}"
+    state: present
+    name: "{{ security_group.name }}"
+
+- name: Create a new security group allowing any ICMP
+  os_security_group_rule:
+    cloud: "{{ cloud }}"
+    security_group: "{{ security_group.name }}"
+    protocol: icmp
+    remote_ip_prefix: 0.0.0.0/0
+
+- name: Create a new security group allowing any SSH connection
+  os_security_group_rule:
+    cloud: "{{ cloud }}"
+    security_group: "{{ security_group.name }}"
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: 0.0.0.0/0
+
+- name: Create server instance
+  os_server:
+    cloud: "{{ cloud }}"
+    state: present
+    name: "{{ instance.name }}"
+    image: "{{ image.name }}"
+    flavor: "{{ instance.flavor }}"
+    network: "{{ network.name }}"
+    auto_ip: yes
+    security_groups: "{{ security_group.name }}"
+    key_name: "{{ ssh_key }}"
+    meta:
+      group: sandbox
+  register: _openstack_instance
+
+- name: Get floating IPv4
+  debug:
+    msg: ""
+
+- name: Get floating IPv6
+  debug:
+    msg: ""
+
+- name: Show Server's IP
+  debug: var=_os_instance.openstack.public_v4
