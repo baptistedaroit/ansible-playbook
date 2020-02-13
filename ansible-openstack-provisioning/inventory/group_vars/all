@@ -1,6 +1,7 @@
 ---
 # Variables here are applicables to all hosts groups
 ssh_key: ansible_key
+ssh_user: centos
 
 ## Cloud configuration
 ## Cloud to use to connect to OpenStack
@@ -10,11 +11,11 @@ cloud: default
 ## Default image is the cirros one
 image:
   # Image name in Openstack
-  name: cirros # Image name in Openstack
+  name: centos # Image name in Openstack
   # Image URL (ie where to downnload it if needed)
-  url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+  url: http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
   # Image location (ie where it is locally stored once downloaded)
-  location: /tmp/cirros-0.3.4-x86_64-disk.img
+  location: /tmp/CentOS-7-x86_64-GenericCloud.qcow2
 #### End of image configuration ###
 
 
@@ -46,6 +47,6 @@ security_group:
 ## Server/Instance configuration
 ## OpenStack instance configuration
 instance:
-  name: vm1-instance
+  name: centos-instance
   flavor: m1.small
 ## End of instance configuration ###

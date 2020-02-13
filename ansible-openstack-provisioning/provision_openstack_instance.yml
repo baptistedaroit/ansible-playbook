@@ -13,7 +13,7 @@
         hostname: "{{ _openstack_instance.server.name }}"
         groups: sandbox
         ansible_host: "{{ _openstack_instance.server.public_v4 }}"
-        ansible_user: cirros
+        ansible_user: "{{ ssh_user }}" 
       changed_when: false
 
     - name: Display connection information
@@ -27,6 +27,12 @@
   gather_facts: false
 
   tasks:
+    - name: Display connection information
+      debug:
+        msg:
+          - "{{ ansible_host }} is ready."
+          - "ssh connection user is {{ ansible_user }}"
+
     - name: Waiting sandbox is ready for ansible
       wait_for_connection:
 

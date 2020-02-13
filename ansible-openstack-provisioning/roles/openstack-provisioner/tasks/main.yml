@@ -5,7 +5,7 @@
     path: "{{ image.location }}"
   register: img
 
-- name: Download cirros image
+- name: Download {{ image.url }}
   get_url:
     url: "{{ image.url }}"
     dest: "{{ image.location }}"
@@ -95,7 +95,7 @@
     security_groups: "{{ security_group.name }}"
     key_name: "{{ ssh_key }}"
     meta:
-      group: sandbox
+      groups: sandbox
   register: _openstack_instance
 
 - name: Get floating IPv4
